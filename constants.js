@@ -26,4 +26,20 @@ const messageConfirmation = (confirmation, cancellation) => ({
     ]
 });
 
-export { messageConfirmation };
+function getGoogleAuth(){
+  return new OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    'http://localhost:3000/connect/callback'
+  );
+}
+
+const getQueryParams = (msg, sessionId) => ({
+    v: 20150910,
+    lang: 'en',
+    timezone: '2017-07-18T15:32:48-0700',
+    query: msg,
+    sessionId: sessionId
+});
+
+export { messageConfirmation, getQueryParams, getGoogleAuth };

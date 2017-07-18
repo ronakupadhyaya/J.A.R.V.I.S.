@@ -6,6 +6,12 @@ import bodyParser from 'body-parser';
 import { router, rtm, web } from './bot';
 import routes from './routes';
 
+import google from 'googleapis';
+
+const OAuth2 = google.auth.OAuth2;
+
+import { User } from './models';
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -18,6 +24,8 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
+
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {

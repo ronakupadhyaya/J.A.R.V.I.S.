@@ -28,27 +28,78 @@ rtm.on(RTM_EVENTS.MESSAGE, function (msg) {
     if (!dm || dm.id !== msg.channel || msg.type !== 'message') {
         return;
     }
-    getQuery(msg.text, msg.user)
-        .then(function ({ data }) {
-            switch (data.result.action) {
-                case 'meeting.add':
-                    console.log(data);
-                    if (data.result.actionIncomplete) {
-                        rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
-                    } else {
-                        web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
-                    }
-                    break;
-                default:
-                    if (data.result.action === 'bestbot.reply' || data.result.action.startsWith('smalltalk.')) {
-                        rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
-                    }
-                    return;
-            }
-        })
-        .catch(function (err) {
-            console.log('error is ', err);
-        });
+
+    User.findOne({slackId: msg.user})
+    .then(function(user){
+      if (!user) {
+        return new User(
+          {
+            slackId: msg.user,
+            slackDmId: msg.channel,
+            google: {}
+          }).save();
+      } else {
+        return user;
+      }
+    })
+    .then(function(user){
+      //console.log('USER is',user);
+      if(!user.google){
+        rtm.sendMessage(`Hello this is scheduler bot. I need to schedule reminders. Please visit http://localhost:3000/connect?user=${user._id} to setup Google Calendar`,msg.channel);
+      } else{
+        getQuery(msg.text, msg.user)
+            .then(function ({ data }) {
+                switch (data.result.action) {
+                    case 'meeting.add':
+                        console.log(data);
+                        if (data.result.actionIncomplete) {
+                            rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+                        } else {
+                            web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
+                        }
+                        break;
+                    case 'reminder.add':
+                       console.log(data);
+                       if (data.result.actionIncomplete) {
+                           rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+                       } else {
+                           web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
+                       }
+                       break;
+                    default:
+                        if (data.result.action === 'bestbot.reply' || data.result.action.startsWith('smalltalk.')) {
+                            rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+                        }
+                        return;
+                }
+            })
+            .catch(function (err) {
+                console.log('error is ', err);
+            });
+      }
+    })
+
+    // getQuery(msg.text, msg.user)
+    //     .then(function ({ data }) {
+    //         switch (data.result.action) {
+    //             case 'meeting.add':
+    //                 console.log(data);
+    //                 if (data.result.actionIncomplete) {
+    //                     rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+    //                 } else {
+    //                     web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
+    //                 }
+    //                 break;
+    //             default:
+    //                 if (data.result.action === 'bestbot.reply' || data.result.action.startsWith('smalltalk.')) {
+    //                     rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+    //                 }
+    //                 return;
+    //         }
+    //     })
+    //     .catch(function (err) {
+    //         console.log('error is ', err);
+    //     });
 });
 
 function getQuery(msg, sessionId) {
