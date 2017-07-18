@@ -11,7 +11,9 @@
     "babel-cli": "^6.24.1",
     "babel-register": "^6.24.1",
     "body-parser": "^1.17.2",
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "googleapis": "^20.1.0",
+    "mongoose": "^4.11.3"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1"

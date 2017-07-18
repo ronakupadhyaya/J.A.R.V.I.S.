@@ -1,3 +1,7 @@
+import google from 'googleapis';
+
+const OAuth2 = google.auth.OAuth2;
+
 const messageConfirmation = (confirmation, cancellation) => ({
     "text": "Is this correct?",
     "type": "message",
@@ -26,7 +30,7 @@ const messageConfirmation = (confirmation, cancellation) => ({
     ]
 });
 
-function getGoogleAuth(){
+const getGoogleAuth = () => {
   return new OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,

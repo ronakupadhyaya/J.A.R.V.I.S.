@@ -1,7 +1,8 @@
 import { RtmClient, WebClient, CLIENT_EVENTS, RTM_EVENTS } from '@slack/client';
 import axios from 'axios';
 import express from 'express';
-import { messageConfirmation } from './constants';
+import { messageConfirmation, getQueryParams } from './constants';
+import { User } from './models';
 
 let router = express.Router();
 let bot_token = process.env.SLACK_BOT_TOKEN || '';
@@ -59,14 +60,16 @@ rtm.on(RTM_EVENTS.MESSAGE, function (msg) {
                         }
                         break;
                     case 'reminder.add':
-                       console.log(data);
-                       if (data.result.actionIncomplete) {
-                           rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
-                       } else {
-                           web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
-                       }
-                       break;
+                        console.log(data);
+                        if (data.result.actionIncomplete) {
+                            rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+                        } else {
+                            web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
+                        }
+                        break;
                     default:
+                        console.log('default statement');
+                        console.log(data.result.action);
                         if (data.result.action === 'bestbot.reply' || data.result.action.startsWith('smalltalk.')) {
                             rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
                         }
@@ -104,13 +107,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function (msg) {
 
 function getQuery(msg, sessionId) {
     return axios.get('https://api.api.ai/api/query', {
-        params: {
-            v: 20150910,
-            lang: 'en',
-            timezone: '2017-07-17T21:07:49-0700',
-            query: msg,
-            sessionId: sessionId
-        },
+        params: getQueryParams(msg, sessionId),
         headers: {
             Authorization: `Bearer ${process.env.API_AI_TOKEN}`
         }
