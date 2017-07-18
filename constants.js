@@ -26,4 +26,12 @@ const messageConfirmation = (confirmation, cancellation) => ({
     ]
 });
 
-export { messageConfirmation };
+const getQueryParams = (msg, sessionId) => ({
+    v: 20150910,
+    lang: 'en',
+    timezone: '2017-07-18T15:32:48-0700',
+    query: msg,
+    sessionId: sessionId
+});
+
+export { messageConfirmation, getQueryParams };
