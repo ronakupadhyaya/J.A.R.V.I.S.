@@ -14,9 +14,9 @@ var userSchema = new Schema({
     type: String,
     required: true
   },
-   google: {},
-   pending: String
-})
+  google: {},
+  pending: String
+});
 
 var User = mongoose.model('User', userSchema);
 

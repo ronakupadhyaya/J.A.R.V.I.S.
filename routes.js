@@ -17,58 +17,57 @@ const scopes = [
 
 const calendar = google.calendar('v3');
 
-router.post('/slack/interactive', function(req, res) {
-  
+router.post('/slack/interactive', (req, res) => {
   const result = JSON.parse(req.body.payload).actions[0];
 
   User.findOne({slackId: JSON.parse(req.body.payload).user.id})
-  .then(function(user){
-    if (!user) {
-      console.log("User not found");
-    } else {
-      console.log(user);
-      var googleAuth = getGoogleAuth();
-      var pending = JSON.parse(user.pending);
-      googleAuth.setCredentials(user.google);
-      const event = {
-        'description': pending.subject,
-        'start': {
-          'date': pending.date,
-          'timeZone': 'America/Los_Angeles',
-        },
-        'end': {
-          'date': pending.date,
-          'timeZone': 'America/Los_Angeles',
-        }
-      };
-      console.log(event);
-      calendar.events.insert({
-        auth: googleAuth,
-        calendarId: 'primary',
-        resource: event,
-      }, function(err, event) {
-        if (err) {
-          console.log('There was an error contacting the Calendar service: ' + err);
-          return;
-        }
-        console.log('Event created');
-        user.pending = JSON.stringify({});
-        user.save();
-      });
-    }
-  })
+    .then((user) => {
+      if (!user) {
+        console.log("User not found");
+      } else {
+        console.log(user);
+        var googleAuth = getGoogleAuth();
+        var pending = JSON.parse(user.pending);
+        googleAuth.setCredentials(user.google);
+        const event = {
+          'description': pending.subject,
+          'start': {
+            'date': pending.date,
+            'timeZone': 'America/Los_Angeles',
+          },
+          'end': {
+            'date': pending.date,
+            'timeZone': 'America/Los_Angeles',
+          }
+        };
+        console.log(event);
+        calendar.events.insert({
+          auth: googleAuth,
+          calendarId: 'primary',
+          resource: event,
+        }, (err, event) => {
+          if (err) {
+            console.log('There was an error contacting the Calendar service: ' + err);
+            return;
+          }
+          console.log('Event created');
+          user.pending = JSON.stringify({});
+          user.save();
+        });
+      }
+    });
 
   res.send(result.value);
 });
 
-router.get('/connect', function(req, res) {
+router.get('/connect', (req, res) => {
   var userId = req.query.user;
   console.log("userId", userId);
   if (! userId) {
     req.status(400).send('Missing id');
   } else{
     User.findById(userId)
-      .then(function(user) {
+      .then((user) => {
         if(!user) {
           res.status(404).send('Cannot find user');
         } else{
@@ -85,16 +84,15 @@ router.get('/connect', function(req, res) {
 
           // Optional property that passes state parameters to redirect URI
           // state: { foo: 'bar' }
-        });
-        console.log('URL is',url);
-        res.redirect(url) // at the end
-      }
-
-    })
+          });
+          console.log('URL is', url);
+          res.redirect(url); // at the end
+        }
+      });
   }
 });
 
-router.get('/connect/callback', function(req, res) {
+router.get('/connect/callback', (req, res) => {
   // console.log('bitches');
   // res.send('here')
   var googleAuth = getGoogleAuth();
@@ -111,22 +109,22 @@ router.get('/connect/callback', function(req, res) {
           res.status(500).json({error: err});
         } else {
           User.findById(req.query.state)
-          .then(function(mongoUser){
-            mongoUser.tokens = tokens;
-            mongoUser.google = tokens;
-            mongoUser.google.profile_id = googleUser.id;
-            mongoUser.google.profile_name = googleUser.displayName;
-            console.log(mongoUser);
-            return mongoUser.save()
-          })
-          .then(function(mongoUser){
-            res.send('You are now connected to Google Calendar API!');
-            rtm.sendMessage('You are now connected to Google Calendar API!',
-            mongoUser.slackDmId);
-          })
-          .catch(function(err){
-            console.log('Error was', err);
-          })
+            .then((mongoUser) => {
+              mongoUser.tokens = tokens;
+              mongoUser.google = tokens;
+              mongoUser.google.profile_id = googleUser.id;
+              mongoUser.google.profile_name = googleUser.displayName;
+              console.log(mongoUser);
+              return mongoUser.save();
+            })
+            .then((mongoUser) => {
+              res.send('You are now connected to Google Calendar API!');
+              rtm.sendMessage('You are now connected to Google Calendar API!',
+                mongoUser.slackDmId);
+            })
+            .catch((err) => {
+              console.log('Error was', err);
+            });
         }
       });
     }

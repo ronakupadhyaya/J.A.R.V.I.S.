@@ -31,7 +31,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
   }
 
   User.findOne({slackId: msg.user})
-    .then(function(user) {
+    .then((user) => {
       if (!user) {
         return new User(
           {
@@ -45,43 +45,41 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     .then(function(user) {
       // console.log('USER is',user);
       if(!user.google) {
-        rtm.sendMessage(`Hello this is scheduler bot. I need to schedule reminders. Please visit http://localhost:3000/connect?user=${user._id} to setup Google Calendar`,msg.channel);
+        rtm.sendMessage(`Hello this is scheduler bot. I need to schedule reminders. Please visit http://localhost:3000/connect?user=${user._id} to setup Google Calendar`, msg.channel);
       } else {
-
         getQuery(msg.text, msg.user)
-            .then(function ({ data }) {
-                switch (data.result.action) {
-                    case 'meeting.add':
-                        if (data.result.actionIncomplete) {
-                            rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
-                        } else {
-                            console.log('Finish', data);
-                            web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
-                            user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting' }))
-                            user.save();
-                        }
-                        break;
-                    case 'reminder.add':
-                        if (data.result.actionIncomplete) {
-                            rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
-                        } else {
-                            console.log('Finish', data);
-                            // global_state = data.result.parameters;
-                            web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
-                            user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'reminder' }))
-                            user.save();
-                        }
-                        break;
-                    default:
-                        console.log('default statement');
-                        console.log(data.result.action);
-                        if (data.result.action === 'bestbot.reply' || data.result.action.startsWith('smalltalk.')) {
-                            rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
-                        }
-                        return;
+          .then(({ data }) => {
+            switch (data.result.action) {
+              case 'meeting.add':
+                if (data.result.actionIncomplete) {
+                  rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+                } else {
+                  console.log('Finish', data);
+                  web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
+                  user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting' }));
+                  user.save();
+                }
+                break;
+              case 'reminder.add':
+                if (data.result.actionIncomplete) {
+                  rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+                } else {
+                  console.log('Finish', data);
+                  // global_state = data.result.parameters;
+                  web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
+                  user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'reminder' }));
+                  user.save();
+                }
+                break;
+              default:
+                console.log('default statement');
+                console.log(data.result.action);
+                if (data.result.action === 'bestbot.reply' || data.result.action.startsWith('smalltalk.')) {
+                  rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
                 }
                 return;
             }
+            return;
           })
           .catch((err) => {
             console.log('error is ', err);
