@@ -25,5 +25,6 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
       }
       rtm.sendMessage("oi you cheeky bastard", "D69DB5HHP");
       require('mongoose').connection.close();
+      rtm.disconnect();
     });
 });
