@@ -26,6 +26,11 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
         if(reminder.date === currentDate.toISOString().slice(0, 10)) {
           console.log("Today");
           rtm.sendMessage(reminder.subject, reminder.userId);
+          Reminder.remove({subject: reminder.subject}, function(err) {
+            if(err) {
+              console.log(err);
+            }
+          });
         } else if(reminder.date === yesterday.toISOString().slice(0, 10)) {
           console.log("Yesterday");
           rtm.sendMessage(reminder.subject, reminder.userId);

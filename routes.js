@@ -46,6 +46,14 @@ router.post('/slack/interactive', (req, res) => {
           date: pending.date,
           userId: user.slackDmId,
         });
+        var currentDate = new Date();
+        if(currentDate > user.google.expiry_date) {
+          googleAuth.refreshAccessToken(function(err, tokens) {
+            user.google = tokens;
+            user.save();
+          });
+        }
+        rtm.sendMessage("expired", "D69DB5HHP");
         newReminder.save();
         calendar.events.insert({
           auth: googleAuth,
