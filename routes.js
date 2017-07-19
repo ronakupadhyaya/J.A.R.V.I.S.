@@ -69,6 +69,8 @@ router.post('/slack/interactive', (req, res) => {
           });
         } else if(user.pending.type === "meeting") {
           console.log(user.pending);
+          const dateTimeString = pending.date + 'T' + pending.time + '-07:00';
+          console.log(dateTimeString);
           const event2 = {
             'summary': 'Meeting',
             'description': pending.type,
