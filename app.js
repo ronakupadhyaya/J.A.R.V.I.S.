@@ -19,10 +19,9 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-
-
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
   console.log('Express started. Listening on port %s', port);
 });
+
 rtm.start();
