@@ -5,20 +5,20 @@ var Schema = mongoose.Schema;
 
 mongoose.connect(process.env.MONGODB_URI);
 
-var userSchema = new Schema ({
-   slackId: {
+var userSchema = new Schema({
+  slackId: {
     type: String,
     required: true
   },
-   slackDmId: {
+  slackDmId: {
     type: String,
     required: true
   },
-   google: {}
-  })
+  google: {}
+});
 
 var User = mongoose.model('User', userSchema);
 
 module.exports = {
- User: User
-}
+  User: User
+};
