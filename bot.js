@@ -31,7 +31,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
   }
   console.log();
   var bool = msg.text.includes('<@');
-  console.log(web.users);
+  console.log(rtm.dataStore.getDMByUserId('U6B22J1MM'));
   User.findOne({slackId: msg.user})
     .then((user) => {
       if (!user) {
