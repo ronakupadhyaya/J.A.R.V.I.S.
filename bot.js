@@ -45,7 +45,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     .then(function(user) {
       // console.log('USER is',user);
       if(!user.google) {
-        rtm.sendMessage(`Hello this is scheduler bot. I need to schedule reminders. Please visit http:://glacial-shelf-50059.herokuapp.com/connect?user=${user._id} to setup Google Calendar`, msg.channel);
+        rtm.sendMessage(`Hello this is scheduler bot. I need to schedule reminders. Please visit http://glacial-shelf-50059.herokuapp.com/connect?user=${user._id} to setup Google Calendar`, msg.channel);
       } else {
         getQuery(msg.text, msg.user)
           .then(({ data }) => {
