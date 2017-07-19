@@ -13,12 +13,60 @@ const scopes = [
   'https://www.googleapis.com/auth/calendar'
 ];
 
-router.post('/slack/interactive', function(req, res) {
-    console.log('////////////////////// Log result that was recieved /////////////////////////');
-    const result = JSON.parse(req.body.payload).actions[0];
-    console.log(result);
+const calendar = google.calendar('v3');
 
-    res.send(result.value);
+router.post('/slack/interactive', function(req, res) {
+  const result = JSON.parse(req.body.payload).actions[0];
+
+  User.findOne({slackId: JSON.parse(req.body.payload).user.id})
+  .then(function(user){
+    if (!user) {
+      console.log("User not found");
+    } else {
+      console.log(user);
+      var googleAuth = getGoogleAuth();
+      var pending = JSON.parse(user.pending);
+      googleAuth.setCredentials(user.google);
+      const event = {
+        'description': pending.subject,
+        'start': {
+          'date': pending.date,
+          'timeZone': 'America/Los_Angeles',
+        },
+        'end': {
+          'date': pending.date,
+          'timeZone': 'America/Los_Angeles',
+        }
+      };
+      console.log(event);
+      calendar.events.insert({
+        auth: googleAuth,
+        calendarId: 'primary',
+        resource: event,
+      }, function(err, event) {
+        if (err) {
+          console.log('There was an error contacting the Calendar service: ' + err);
+          return;
+        }
+        console.log('Event created');
+        user.pending = JSON.stringify({});
+        user.save();
+      });
+    }
+  })
+
+  // calendar.events.insert({
+  //   calendarId: 'primary',
+  //   resource: event,
+  // }, function(err, event) {
+  //   if (err) {
+  //     console.log('There was an error contacting the Calendar service: ' + err);
+  //     return;
+  //   }
+  //   console.log('Event created');
+  // });
+
+  res.send(result.value);
 });
 
 router.get('/connect', function(req, res) {
@@ -49,6 +97,7 @@ router.get('/connect', function(req, res) {
         console.log('URL is',url);
         res.redirect(url) // at the end
       }
+
     })
   }
 })
@@ -58,7 +107,7 @@ router.get('/connect/callback', function(req, res) {
   // res.send('here')
   var googleAuth = getGoogleAuth();
   googleAuth.getToken(req.query.code, function (err, tokens) {
-  // Now tokens contains an access_token and an optional refresh_token. Save them.
+    // Now tokens contains an access_token and an optional refresh_token. Save them.
     if (err) {
       res.status(500).json({error:err});
       // oauth2Client.setCredentials(tokens);
@@ -70,21 +119,22 @@ router.get('/connect/callback', function(req, res) {
           res.status(500).json({error:err});
         } else {
           User.findById(req.query.state)
-            .then(function(mongoUser){
-              mongoUser.google = tokens;
-              mongoUser.google.profile_id = googleUser.id;
-              mongoUser.google.profile_name = google.displayName;
-              console.log(mongoUser);
-              return mongoUser.save()
-            })
-            .then(function(mongoUser){
-              res.send('You are now connected to Google Calendar API!');
-              rtm.sendMessage('You are now connected to Google Calendar API!',
-              mongoUser.slackDmId);
-            })
-            .catch(function(err){
-              console.log('Error was', err);
-            })
+          .then(function(mongoUser){
+            mongoUser.tokens = tokens;
+            mongoUser.google = tokens;
+            mongoUser.google.profile_id = googleUser.id;
+            mongoUser.google.profile_name = googleUser.displayName;
+            console.log(mongoUser);
+            return mongoUser.save()
+          })
+          .then(function(mongoUser){
+            res.send('You are now connected to Google Calendar API!');
+            rtm.sendMessage('You are now connected to Google Calendar API!',
+            mongoUser.slackDmId);
+          })
+          .catch(function(err){
+            console.log('Error was', err);
+          })
           // res.json({
           //   code: req.query.code,
           //   state: req.query.state,
@@ -93,7 +143,7 @@ router.get('/connect/callback', function(req, res) {
           // })
         }
       })
-      }
+    }
 
   });
 })
