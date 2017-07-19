@@ -53,21 +53,25 @@ router.post('/slack/interactive', (req, res) => {
             date: pending.date,
             userId: user.slackDmId,
           });
-          newReminder.save();
-          calendar.events.insert({
-            auth: googleAuth,
-            calendarId: 'primary',
-            resource: event,
-          }, (err, event) => {
-            if (err) {
-              console.log('There was an error contacting the Calendar service: ' + err);
-              return;
-            }
-            console.log('Event created');
-            user.pending = JSON.stringify({});
-            user.save();
-          });
+          newReminder
+            .save()
+            .then(() => {
+              calendar.events.insert({
+                auth: googleAuth,
+                calendarId: 'primary',
+                resource: event,
+              }, (err) => {
+                if (err) {
+                  console.log('There was an error contacting the Calendar service: ' + err);
+                  return;
+                }
+                console.log('Event created');
+                user.pending = JSON.stringify({});
+                user.save();
+              });
+            });
         } else if(user.pending.type === "meeting") {
+          console.log('START HERE');
           console.log(user.pending);
           const dateTimeString = pending.date + 'T' + pending.time + '-07:00';
           console.log(dateTimeString);
