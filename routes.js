@@ -82,6 +82,7 @@ router.post('/slack/interactive', (req, res) => {
             },
             'attendees': [],
           };
+          console.log("Here");
           calendar.events.insert({
             auth: googleAuth,
             calendarId: 'primary',
