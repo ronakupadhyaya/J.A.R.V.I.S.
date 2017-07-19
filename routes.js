@@ -7,7 +7,7 @@ import google from 'googleapis';
 
 const OAuth2 = google.auth.OAuth2;
 
-import { User } from './models';
+import { User, Reminder } from './models';
 import { getGoogleAuth } from './constants';
 
 const scopes = [
@@ -41,6 +41,12 @@ router.post('/slack/interactive', (req, res) => {
           }
         };
         console.log(event);
+        var newReminder = new Reminder({
+          subject: pending.subject,
+          date: pending.date,
+          userId: user.slackDmId,
+        });
+        newReminder.save();
         calendar.events.insert({
           auth: googleAuth,
           calendarId: 'primary',

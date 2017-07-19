@@ -3,20 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "babel-node --presets es2015 app.js"
+    "start": "babel-node --presets es2015 app.js",
+    "cron": "babel-node --presets es2015 cronjobs.js"
   },
   "dependencies": {
     "@slack/client": "^3.10.0",
     "axios": "^0.16.2",
-    "babel-cli": "^6.24.1",
     "babel-register": "^6.24.1",
     "body-parser": "^1.17.2",
-    "eslint-config-airbnb-standard": "^1.4.1",
     "express": "^4.15.3",
     "googleapis": "^20.1.0",
     "mongoose": "^4.11.3"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-preset-es2015": "^6.24.1",
     "eslint": "^4.2.0",
