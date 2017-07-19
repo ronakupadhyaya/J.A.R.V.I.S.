@@ -30,7 +30,15 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     return;
   }
   var bool = msg.text.includes('<@');
-  console.log("Try", rtm.dataStore.getUserById('U6B22J1MM'));
+  if(bool) {
+    var i = msg.text.indexOf('@');
+    var j = msg.text.indexOf('>');
+    var id = msg.text.slice(i + 1, j);
+    var username = rtm.dataStore.getUserById(id).profile.real_name;
+    var reg = /(\[.*?\])/gi;
+    var newMessage = msg.text.replace(reg, username);
+    console.log(username, newMessage);
+  }
   User.findOne({slackId: msg.user})
     .then((user) => {
       if (!user) {
