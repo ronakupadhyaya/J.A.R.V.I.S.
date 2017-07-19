@@ -53,7 +53,7 @@ router.post('/slack/interactive', (req, res) => {
             user.save();
           });
         }
-        rtm.sendMessage("expired", "D69DB5HHP");
+        rtm.sendMessage("expired", "D6ACYJS9J");
         newReminder.save();
         calendar.events.insert({
           auth: googleAuth,
