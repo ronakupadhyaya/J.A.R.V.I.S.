@@ -29,7 +29,9 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
   if (!dm || dm.id !== msg.channel || msg.type !== 'message') {
     return;
   }
-  console.log('Dm is', dm, msg);
+  console.log();
+  var bool = msg.text.includes('<@');
+  console.log(web.users.list);
   User.findOne({slackId: msg.user})
     .then((user) => {
       if (!user) {
