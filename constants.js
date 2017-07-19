@@ -22,6 +22,7 @@ const messageConfirmation = (confirmation, cancellation) => ({
         {
           "name": "no",
           "text": "No",
+          "type": "button",
           "value": cancellation
         }
       ]
