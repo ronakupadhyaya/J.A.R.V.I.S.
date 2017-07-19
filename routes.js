@@ -69,7 +69,7 @@ router.post('/slack/interactive', (req, res) => {
           });
         } else if(user.pending.type === "meeting") {
           console.log(user.pending);
-          const event = {
+          const event2 = {
             'summary': 'Meeting',
             'description': pending.type,
             'start': {
@@ -86,7 +86,7 @@ router.post('/slack/interactive', (req, res) => {
           calendar.events.insert({
             auth: googleAuth,
             calendarId: 'primary',
-            resource: event,
+            resource: event2,
           }, (err, event) => {
             if (err) {
               console.log('There was an error contacting the Calendar service: ' + err);
