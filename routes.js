@@ -11,8 +11,9 @@ import { User, Reminder } from './models';
 import { getGoogleAuth } from './constants';
 
 const scopes = [
-  'https://www.googleapis.com/auth/plus.me',
-  'https://www.googleapis.com/auth/calendar'
+  'https://www.googleapis.com/auth/calendar',
+  'profile',
+  'email'
 ];
 
 const calendar = google.calendar('v3');
@@ -129,7 +130,8 @@ router.get('/connect/callback', (req, res) => {
               mongoUser.google = tokens;
               mongoUser.google.profile_id = googleUser.id;
               mongoUser.google.profile_name = googleUser.displayName;
-              console.log(mongoUser);
+              mongoUser.google.email = mongoUser.emails[0].value;
+              console.log(mongoUser.emails[0].value);
               return mongoUser.save();
             })
             .then((mongoUser) => {
