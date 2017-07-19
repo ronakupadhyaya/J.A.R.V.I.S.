@@ -54,7 +54,6 @@ router.post('/slack/interactive', (req, res) => {
             user.save();
           });
         }
-        rtm.sendMessage("expired", "D6ACYJS9J");
         newReminder.save();
         calendar.events.insert({
           auth: googleAuth,
@@ -131,7 +130,6 @@ router.get('/connect/callback', (req, res) => {
               mongoUser.google.profile_id = googleUser.id;
               mongoUser.google.profile_name = googleUser.displayName;
               // mongoUser.google.email = mongoUser.emails[0].value;
-              console.log(mongoUser.emails);
               return mongoUser.save();
             })
             .then((mongoUser) => {
