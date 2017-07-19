@@ -29,7 +29,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
   if (!dm || dm.id !== msg.channel || msg.type !== 'message') {
     return;
   }
-
+  console.log('Dm is', dm, msg);
   User.findOne({slackId: msg.user})
     .then((user) => {
       if (!user) {
