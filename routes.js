@@ -19,8 +19,6 @@ const scopes = [
 const calendar = google.calendar('v3');
 
 router.post('/slack/interactive', (req, res) => {
-  const result = JSON.parse(req.body.payload).actions[0];
-
   User.findOne({slackId: JSON.parse(req.body.payload).user.id})
     .then((user) => {
       if (!user) {
@@ -30,23 +28,6 @@ router.post('/slack/interactive', (req, res) => {
         var googleAuth = getGoogleAuth();
         var pending = JSON.parse(user.pending);
         googleAuth.setCredentials(user.google);
-        const event = {
-          'description': pending.subject,
-          'start': {
-            'date': pending.date,
-            'timeZone': 'America/Los_Angeles',
-          },
-          'end': {
-            'date': pending.date,
-            'timeZone': 'America/Los_Angeles',
-          }
-        };
-        console.log(event);
-        var newReminder = new Reminder({
-          subject: pending.subject,
-          date: pending.date,
-          userId: user.slackDmId,
-        });
         var currentDate = new Date();
         if(currentDate > user.google.expiry_date) {
           googleAuth.refreshAccessToken(function(err, tokens) {
@@ -54,24 +35,44 @@ router.post('/slack/interactive', (req, res) => {
             user.save();
           });
         }
-        newReminder.save();
-        calendar.events.insert({
-          auth: googleAuth,
-          calendarId: 'primary',
-          resource: event,
-        }, (err, event) => {
-          if (err) {
-            console.log('There was an error contacting the Calendar service: ' + err);
-            return;
-          }
-          console.log('Event created');
-          user.pending = JSON.stringify({});
-          user.save();
-        });
+        if(user.pending.type === "reminder") {
+          const event = {
+            'description': pending.subject,
+            'start': {
+              'date': pending.date,
+              'timeZone': 'America/Los_Angeles',
+            },
+            'end': {
+              'date': pending.date,
+              'timeZone': 'America/Los_Angeles',
+            }
+          };
+          var newReminder = new Reminder({
+            subject: pending.subject,
+            date: pending.date,
+            userId: user.slackDmId,
+          });
+          newReminder.save();
+          calendar.events.insert({
+            auth: googleAuth,
+            calendarId: 'primary',
+            resource: event,
+          }, (err, event) => {
+            if (err) {
+              console.log('There was an error contacting the Calendar service: ' + err);
+              return;
+            }
+            console.log('Event created');
+            user.pending = JSON.stringify({});
+            user.save();
+          });
+        } else if(user.pending.type === "meeting") {
+          console.log(user.pending);
+        }
       }
     });
 
-  res.send(result.value);
+  res.send(JSON.parse(req.body.payload).actions[0].value);
 });
 
 router.get('/connect', (req, res) => {
