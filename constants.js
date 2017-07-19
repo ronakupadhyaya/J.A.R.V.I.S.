@@ -1,3 +1,7 @@
+import google from 'googleapis';
+
+const OAuth2 = google.auth.OAuth2;
+
 const messageConfirmation = (confirmation, cancellation) => ({
     "text": "Is this correct?",
     "type": "message",
@@ -26,6 +30,14 @@ const messageConfirmation = (confirmation, cancellation) => ({
     ]
 });
 
+const getGoogleAuth = () => {
+  return new OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    'http://localhost:3000/connect/callback'
+  );
+}
+
 const getQueryParams = (msg, sessionId) => ({
     v: 20150910,
     lang: 'en',
@@ -34,4 +46,4 @@ const getQueryParams = (msg, sessionId) => ({
     sessionId: sessionId
 });
 
-export { messageConfirmation, getQueryParams };
+export { messageConfirmation, getQueryParams, getGoogleAuth };

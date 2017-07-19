@@ -12,7 +12,9 @@
     "babel-register": "^6.24.1",
     "body-parser": "^1.17.2",
     "eslint-config-airbnb-standard": "^1.4.1",
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "googleapis": "^20.1.0",
+    "mongoose": "^4.11.3"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
