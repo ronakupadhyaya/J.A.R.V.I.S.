@@ -57,6 +57,8 @@ typings/
 # Yarn lock
 yarn.lock
 
+# Package lock
+package-lock.json
+
 # dotenv environment variables file
 env.sh
-

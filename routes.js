@@ -7,12 +7,13 @@ import google from 'googleapis';
 
 const OAuth2 = google.auth.OAuth2;
 
-import { User } from './models';
+import { User, Reminder } from './models';
 import { getGoogleAuth } from './constants';
 
 const scopes = [
-  'https://www.googleapis.com/auth/plus.me',
-  'https://www.googleapis.com/auth/calendar'
+  'https://www.googleapis.com/auth/calendar',
+  'profile',
+  'email'
 ];
 
 const calendar = google.calendar('v3');
@@ -41,6 +42,19 @@ router.post('/slack/interactive', (req, res) => {
           }
         };
         console.log(event);
+        var newReminder = new Reminder({
+          subject: pending.subject,
+          date: pending.date,
+          userId: user.slackDmId,
+        });
+        var currentDate = new Date();
+        if(currentDate > user.google.expiry_date) {
+          googleAuth.refreshAccessToken(function(err, tokens) {
+            user.google = tokens;
+            user.save();
+          });
+        }
+        newReminder.save();
         calendar.events.insert({
           auth: googleAuth,
           calendarId: 'primary',
@@ -110,11 +124,12 @@ router.get('/connect/callback', (req, res) => {
         } else {
           User.findById(req.query.state)
             .then((mongoUser) => {
+              console.log("Logging in", googleUser);
               mongoUser.tokens = tokens;
               mongoUser.google = tokens;
               mongoUser.google.profile_id = googleUser.id;
               mongoUser.google.profile_name = googleUser.displayName;
-              console.log(mongoUser);
+              // mongoUser.google.email = mongoUser.emails[0].value;
               return mongoUser.save();
             })
             .then((mongoUser) => {

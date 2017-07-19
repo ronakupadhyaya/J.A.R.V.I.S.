@@ -34,7 +34,8 @@ const getGoogleAuth = () => {
   return new OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    'http://localhost:3000/connect/callback'
+    // 'http://localhost:3000/connect/callback'
+    'http://glacial-shelf-50059.herokuapp.com/connect/callback'
   );
 };
 
