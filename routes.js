@@ -124,6 +124,7 @@ router.get('/connect/callback', (req, res) => {
         } else {
           User.findById(req.query.state)
             .then((mongoUser) => {
+              console.log("Logging in", googleUser);
               mongoUser.tokens = tokens;
               mongoUser.google = tokens;
               mongoUser.google.profile_id = googleUser.id;
