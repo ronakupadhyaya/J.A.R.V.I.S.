@@ -14,7 +14,7 @@ let channel = 'T6AVBE3GX';
 // The client will emit an RTM.AUTHENTICATED event on successful connection, with the `rtm.start` payload
 rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
   for (const c of rtmStartData.channels) {
-	 if (c.is_member && c.name === 'general') { channel = c.id; }
+    if (c.is_member && c.name === 'general') { channel = c.id; }
   }
   console.log(`Logged in as ${rtmStartData.self.name} of team ${rtmStartData.team.name}, but not yet connected to a channel`);
 });
@@ -30,7 +30,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     return;
   }
 
-  User.findOne({slackId: msg.user})
+  User.findOne({ slackId: msg.user })
     .then((user) => {
       if (!user) {
         return new User(
@@ -42,13 +42,17 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
       }
       return user;
     })
-    .then(function(user) {
+    .then((user) => {
       // console.log('USER is',user);
-      if(!user.google) {
+      if (!user.google) {
         rtm.sendMessage(`Hello this is scheduler bot. I need to schedule reminders. Please visit http://glacial-shelf-50059.herokuapp.com/connect?user=${user._id} to setup Google Calendar`, msg.channel);
       } else {
         getQuery(msg.text, msg.user)
           .then(({ data }) => {
+            if (JSON.parse(user.pending).type === 'meeting' || JSON.parse(user.pending).type === 'reminder') {
+              rtm.sendMessage("Please select a choice before moving on", msg.channel);
+              return;
+            }
             switch (data.result.action) {
               case 'meeting.add':
                 if (data.result.actionIncomplete) {
@@ -67,6 +71,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   console.log('Finish', data);
                   // global_state = data.result.parameters;
                   web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
+                  console.log('data.result.parameters is ', data.result.parameters);
                   user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'reminder' }));
                   user.save();
                 }
