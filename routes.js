@@ -130,8 +130,8 @@ router.get('/connect/callback', (req, res) => {
               mongoUser.google = tokens;
               mongoUser.google.profile_id = googleUser.id;
               mongoUser.google.profile_name = googleUser.displayName;
-              mongoUser.google.email = mongoUser.emails[0].value;
-              console.log(mongoUser.emails[0].value);
+              // mongoUser.google.email = mongoUser.emails[0].value;
+              console.log(mongoUser.emails);
               return mongoUser.save();
             })
             .then((mongoUser) => {
