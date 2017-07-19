@@ -30,7 +30,7 @@ router.post('/slack/interactive', (req, res) => {
         var pending = JSON.parse(user.pending);
         googleAuth.setCredentials(user.google);
         const event = {
-          'description': pending.subject,
+          'summary': pending.subject,
           'start': {
             'date': pending.date,
             'timeZone': 'America/Los_Angeles',
