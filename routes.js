@@ -35,7 +35,7 @@ router.post('/slack/interactive', (req, res) => {
             user.save();
           });
         }
-        if(user.pending.type === "reminder") {
+        if(pending.type === "reminder") {
           const event = {
             'summary': 'Reminder',
             'description': pending.subject,
@@ -70,9 +70,8 @@ router.post('/slack/interactive', (req, res) => {
                 user.save();
               });
             });
-        } else if(user.pending.type === "meeting") {
+        } else if(pending.type === "meeting") {
           console.log('START HERE');
-          console.log(user.pending);
           const dateTimeString = pending.date + 'T' + pending.time + '-07:00';
           console.log(dateTimeString);
           const event2 = {
