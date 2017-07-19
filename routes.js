@@ -37,6 +37,7 @@ router.post('/slack/interactive', (req, res) => {
         }
         if(user.pending.type === "reminder") {
           const event = {
+            'summary': 'Reminder',
             'description': pending.subject,
             'start': {
               'date': pending.date,
@@ -68,6 +69,32 @@ router.post('/slack/interactive', (req, res) => {
           });
         } else if(user.pending.type === "meeting") {
           console.log(user.pending);
+          const event = {
+            'summary': 'Meeting',
+            'description': pending.type,
+            'start': {
+              'dateTime': pending.date + 'T' + pending.time + '-07:00',
+              'timeZone': 'America/Los_Angeles',
+            },
+            'end': {
+              'dateTime': pending.date + 'T' + pending.time + '-07:00',
+              'timeZone': 'America/Los_Angeles',
+            },
+            'attendees': [],
+          };
+          calendar.events.insert({
+            auth: googleAuth,
+            calendarId: 'primary',
+            resource: event,
+          }, (err, event) => {
+            if (err) {
+              console.log('There was an error contacting the Calendar service: ' + err);
+              return;
+            }
+            console.log('Event created');
+            user.pending = JSON.stringify({});
+            user.save();
+          });
         }
       }
     });
