@@ -46,31 +46,39 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
       // console.log('USER is',user);
       if(!user.google) {
         rtm.sendMessage(`Hello this is scheduler bot. I need to schedule reminders. Please visit http://localhost:3000/connect?user=${user._id} to setup Google Calendar`,msg.channel);
-      } else{
+      } else {
+
         getQuery(msg.text, msg.user)
-          .then(({ data }) => {
-            switch (data.result.action) {
-              case 'meeting.add':
-                console.log(data);
-                if (data.result.actionIncomplete) {
-                  rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
-                } else {
-                  web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
-                }
-                break;
-              case 'reminder.add':
-                console.log(data);
-                if (data.result.actionIncomplete) {
-                  rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
-                } else {
-                  web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
-                }
-                break;
-              default:
-                console.log('default statement');
-                console.log(data.result.action);
-                if (data.result.action === 'bestbot.reply' || data.result.action.startsWith('smalltalk.')) {
-                  rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+            .then(function ({ data }) {
+                switch (data.result.action) {
+                    case 'meeting.add':
+                        if (data.result.actionIncomplete) {
+                            rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+                        } else {
+                            console.log('Finish', data);
+                            web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
+                            user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting' }))
+                            user.save();
+                        }
+                        break;
+                    case 'reminder.add':
+                        if (data.result.actionIncomplete) {
+                            rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+                        } else {
+                            console.log('Finish', data);
+                            // global_state = data.result.parameters;
+                            web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
+                            user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'reminder' }))
+                            user.save();
+                        }
+                        break;
+                    default:
+                        console.log('default statement');
+                        console.log(data.result.action);
+                        if (data.result.action === 'bestbot.reply' || data.result.action.startsWith('smalltalk.')) {
+                            rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
+                        }
+                        return;
                 }
                 return;
             }
