@@ -35,7 +35,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     var j = msg.text.indexOf('>');
     var id = msg.text.slice(i + 1, j);
     var username = rtm.dataStore.getUserById(id).profile.real_name;
-    var reg = /(\[.*?\])/gi;
+    var reg = /(\<.*?\>)/gi;
     var newMessage = msg.text.replace(reg, username);
     console.log(username, newMessage);
   }
