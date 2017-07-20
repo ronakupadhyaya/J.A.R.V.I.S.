@@ -62,10 +62,10 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
       } else {
         getQuery(msg.text, msg.user)
           .then(({ data }) => {
-            if (JSON.parse(user).pending && (JSON.parse(user.pending).type === 'meeting' || JSON.parse(user.pending).type === 'reminder') ) {
-              rtm.sendMessage("Please select a choice before moving on", msg.channel);
-              return;
-            }
+            // if (JSON.parse(user).pending && (JSON.parse(user.pending).type === 'meeting' || JSON.parse(user.pending).type === 'reminder') ) {
+            //   rtm.sendMessage("Please select a choice before moving on", msg.channel);
+            //   return;
+            // }
             switch (data.result.action) {
               case 'meeting.add':
                 if (data.result.actionIncomplete) {
