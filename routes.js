@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 
-import rtm from './bot';
+import { rtm } from './bot';
 
 import google from 'googleapis';
 
@@ -90,8 +90,16 @@ router.post('/slack/interactive', (req, res) => {
             });
         } else if (pending.type === "meeting") {
           console.log('START HERE');
-          const dateTimeString = pending.date + 'T' + pending.time + '-07:00';
-          console.log(dateTimeString);
+          console.log(pending.ids);
+          const attendees = [];
+          for(let i = 0; i < pending.ids.length; i++) {
+            const object = {};
+            const id = pending.ids[i];
+            console.log(rtm.dataStore.getUserById(id).profile);
+            object.email = rtm.dataStore.getUserById(id).profile.email;
+            attendees.push(object);
+          }
+          console.log(attendees);
           const event2 = {
             'summary': 'Meeting',
             'description': pending.type,
@@ -103,7 +111,7 @@ router.post('/slack/interactive', (req, res) => {
               'dateTime': pending.date + 'T' + pending.time + '-07:00',
               'timeZone': 'America/Los_Angeles',
             },
-            'attendees': [],
+            'attendees': attendees,
           };
           console.log("Here");
           calendar.events.insert({
