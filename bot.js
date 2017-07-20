@@ -34,7 +34,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
   const bool = msg.text.includes('<@');
   if(bool) {
     const arr = [];
-    const temp = [];
+    let temp = [];
     for(let a = 0; a < msg.text.length; a++) {
       if(msg.text[a] === '@') {
         temp.push(a);
