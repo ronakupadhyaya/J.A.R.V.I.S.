@@ -19,8 +19,6 @@ const scopes = [
 const calendar = google.calendar('v3');
 
 router.post('/slack/interactive', (req, res) => {
-  const result = JSON.parse(req.body.payload).actions[0];
-
   User.findOne({slackId: JSON.parse(req.body.payload).user.id})
     .then((user) => {
       if (!user) {
@@ -30,7 +28,8 @@ router.post('/slack/interactive', (req, res) => {
         var googleAuth = getGoogleAuth();
         var pending = JSON.parse(user.pending);
         googleAuth.setCredentials(user.google);
-        const event = {
+        /* not sure if this commented block should be removed -- due to merge
+         const event = {
           'summary': pending.subject,
           'start': {
             'date': pending.date,
@@ -46,7 +45,7 @@ router.post('/slack/interactive', (req, res) => {
           subject: pending.subject,
           date: pending.date,
           userId: user.slackDmId,
-        });
+        }); */
         var currentDate = new Date();
         if(currentDate > user.google.expiry_date) {
           googleAuth.refreshAccessToken(function(err, tokens) {
@@ -54,24 +53,77 @@ router.post('/slack/interactive', (req, res) => {
             user.save();
           });
         }
-        newReminder.save();
-        calendar.events.insert({
-          auth: googleAuth,
-          calendarId: 'primary',
-          resource: event,
-        }, (err, event) => {
-          if (err) {
-            console.log('There was an error contacting the Calendar service: ' + err);
-            return;
-          }
-          console.log('Event created');
-          user.pending = JSON.stringify({});
-          user.save();
-        });
+        if(pending.type === "reminder") {
+          const event = {
+            'summary': 'Reminder',
+            'description': pending.subject,
+            'start': {
+              'date': pending.date,
+              'timeZone': 'America/Los_Angeles',
+            },
+            'end': {
+              'date': pending.date,
+              'timeZone': 'America/Los_Angeles',
+            }
+          };
+          var newReminder = new Reminder({
+            subject: pending.subject,
+            date: pending.date,
+            userId: user.slackDmId,
+          });
+          newReminder
+            .save()
+            .then(() => {
+              calendar.events.insert({
+                auth: googleAuth,
+                calendarId: 'primary',
+                resource: event,
+              }, (err) => {
+                if (err) {
+                  console.log('There was an error contacting the Calendar service: ' + err);
+                  return;
+                }
+                console.log('Event created');
+                user.pending = JSON.stringify({});
+                user.save();
+              });
+            });
+        } else if(pending.type === "meeting") {
+          console.log('START HERE');
+          const dateTimeString = pending.date + 'T' + pending.time + '-07:00';
+          console.log(dateTimeString);
+          const event2 = {
+            'summary': 'Meeting',
+            'description': pending.type,
+            'start': {
+              'dateTime': pending.date + 'T' + pending.time + '-07:00',
+              'timeZone': 'America/Los_Angeles',
+            },
+            'end': {
+              'dateTime': pending.date + 'T' + pending.time + '-07:00',
+              'timeZone': 'America/Los_Angeles',
+            },
+            'attendees': [],
+          };
+          console.log("Here");
+          calendar.events.insert({
+            auth: googleAuth,
+            calendarId: 'primary',
+            resource: event2,
+          }, (err, event) => {
+            if (err) {
+              console.log('There was an error contacting the Calendar service: ' + err);
+              return;
+            }
+            console.log('Event created');
+            user.pending = JSON.stringify({});
+            user.save();
+          });
+        }
       }
     });
 
-  res.send(result.value);
+  res.send(JSON.parse(req.body.payload).actions[0].value);
 });
 
 router.get('/connect', (req, res) => {

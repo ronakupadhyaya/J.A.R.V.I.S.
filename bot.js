@@ -24,13 +24,26 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
   // things to do when the bot connects to slack
 });
 
+var mapping = {};
+
 rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
   var dm = rtm.dataStore.getDMByUserId(msg.user);
   if (!dm || dm.id !== msg.channel || msg.type !== 'message') {
     return;
   }
-
-  User.findOne({ slackId: msg.user })
+  var bool = msg.text.includes('<@');
+  if(bool) {
+    var i = msg.text.indexOf('@');
+    var j = msg.text.indexOf('>');
+    var id = msg.text.slice(i + 1, j);
+    var username = rtm.dataStore.getUserById(id).profile.first_name;
+    var reg = /(\<.*?\>)/gi;
+    mapping[username] = id;
+    var newMessage = msg.text.replace(reg, username);
+    console.log(username, newMessage);
+    msg.text = newMessage;
+  }
+  User.findOne({slackId: msg.user})
     .then((user) => {
       if (!user) {
         return new User(
@@ -43,7 +56,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
       return user;
     })
     .then((user) => {
-      // console.log('USER is',user);
+      console.log('USER is', rtm.dataStore.getUserById(user.slackId));
       if (!user.google) {
         rtm.sendMessage(`Hello this is scheduler bot. I need to schedule reminders. Please visit http://glacial-shelf-50059.herokuapp.com/connect?user=${user._id} to setup Google Calendar`, msg.channel);
       } else {
@@ -59,8 +72,14 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
                 } else {
                   console.log('Finish', data);
+                  var text = data.result.fulfillment.speech;
+                  var i = text.indexOf('with');
+                  var j = text.indexOf('at');
+                  text = text.slice(i + 5, j - 1).trim();
+
+                  console.log(mapping);
                   web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
-                  user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting' }));
+                  user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting', id: mapping[text] }));
                   user.save();
                 }
                 break;
@@ -71,9 +90,11 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   console.log('Finish', data);
                   // global_state = data.result.parameters;
                   web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
+                  // David removed the next 3 lines. I don't think that's right, but if the program is broken try removing them
                   console.log('data.result.parameters is ', data.result.parameters);
                   user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'reminder' }));
                   user.save();
+                  // the above 3 lines
                 }
                 break;
               default:
