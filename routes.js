@@ -38,8 +38,10 @@ router.post('/slack/interactive', (req, res) => {
           'timeZone': 'America/Los_Angeles',
         }
       };
+      console.log("Here1");
       const googleAuth = getGoogleAuth();
       googleAuth.setCredentials(user.google);
+      console.log("Here2");
       calendar.events.insert({
         auth: googleAuth,
         calendarId: 'primary',
@@ -61,7 +63,7 @@ router.post('/slack/interactive', (req, res) => {
       if (!user) {
         console.log("User not found");
       } else {
-        console.log(user);
+        //console.log(user);
         const googleAuth = getGoogleAuth();
         const pending = JSON.parse(user.pending);
         googleAuth.setCredentials(user.google);
