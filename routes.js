@@ -26,6 +26,7 @@ router.post('/slack/interactive', (req, res) => {
         return;
       }
       console.log("USER is", user);
+      console.log("USER is ()", user.google);
       const event = {
         'summary': 'Reminder',
         'description': 'Reminder',
