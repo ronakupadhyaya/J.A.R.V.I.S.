@@ -24,13 +24,14 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
   // things to do when the bot connects to slack
 });
 
+var mapping = {};
+
 rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
   var dm = rtm.dataStore.getDMByUserId(msg.user);
   if (!dm || dm.id !== msg.channel || msg.type !== 'message') {
     return;
   }
   var bool = msg.text.includes('<@');
-  var mapping = {};
   if(bool) {
     var i = msg.text.indexOf('@');
     var j = msg.text.indexOf('>');
