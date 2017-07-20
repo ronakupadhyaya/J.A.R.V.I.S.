@@ -19,6 +19,7 @@ const scopes = [
 const calendar = google.calendar('v3');
 
 router.post('/slack/interactive', (req, res) => {
+
   User.findOne({ slackId: JSON.parse(req.body.payload).user.id })
     .then((user) => {
       if (!user) {
