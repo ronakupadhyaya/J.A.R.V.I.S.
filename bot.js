@@ -45,6 +45,12 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
       arr.push(temp);
     }
 
+    console.log(msg.text);
+    for(let b = 0; b < arr.length; b++) {
+      const temp = arr[b];
+      console.log(temp);
+    }
+
     for(let b = 0; b < arr.length; b++) {
       const temp = arr[b];
       const i = temp[0];
