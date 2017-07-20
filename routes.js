@@ -95,6 +95,8 @@ router.post('/slack/interactive', (req, res) => {
           for(let i = 0; i < pending.ids.length; i++) {
             const object = {};
             const id = pending.ids[i];
+            console.log('rtm is ', rtm);
+            console.log('rtm.datastore is ', rtm.dataStore);
             console.log(rtm.dataStore.getUserById(id).profile);
             object.email = rtm.dataStore.getUserById(id).profile.email;
             attendees.push(object);
