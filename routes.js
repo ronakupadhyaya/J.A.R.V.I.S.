@@ -111,7 +111,7 @@ router.post('/slack/interactive', (req, res) => {
               'dateTime': pending.date + 'T' + pending.time + '-07:00',
               'timeZone': 'America/Los_Angeles',
             },
-            'attendees': [],
+            'attendees': attendees,
           };
           console.log("Here");
           calendar.events.insert({
