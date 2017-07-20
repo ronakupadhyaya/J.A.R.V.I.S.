@@ -41,7 +41,7 @@ router.post('/slack/interactive', (req, res) => {
       console.log("Here1");
       const googleAuth = getGoogleAuth();
       googleAuth.setCredentials(user.google);
-      console.log("Here2");
+      console.log("Here2", user.google);
       calendar.events.insert({
         auth: googleAuth,
         calendarId: 'primary',
