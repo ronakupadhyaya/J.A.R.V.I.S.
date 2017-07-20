@@ -65,7 +65,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
       msg.text = newMessage;
       console.log(username, newMessage);
     }
-  
+
     // const i = msg.text.indexOf('@');
     // const j = msg.text.indexOf('>');
     // const id = msg.text.slice(i + 1, j);
@@ -106,14 +106,19 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
                 } else {
                   console.log('Finish', data);
-                  let text = data.result.fulfillment.speech;
-                  const startIndex = text.indexOf('with');
-                  const endIndex = text.indexOf('at');
-                  text = text.slice(startIndex + 5, endIndex - 1).trim();
-
-                  console.log(mapping);
+                  const ids = [];
+                  for (const key in mapping) {
+                    if (mapping.hasOwnProperty(key)) {
+                      ids.push(mapping[key]);
+                    }
+                  }
+                  // let text = data.result.fulfillment.speech;
+                  // const startIndex = text.indexOf('with');
+                  // const endIndex = text.indexOf('at');
+                  // text = text.slice(startIndex + 5, endIndex - 1).trim();
+                  // console.log(mapping);
                   web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
-                  user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting', id: mapping[text] }));
+                  user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting', ids: ids }));
                   user.save();
                 }
                 break;
