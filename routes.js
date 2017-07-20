@@ -28,6 +28,24 @@ router.post('/slack/interactive', (req, res) => {
         var googleAuth = getGoogleAuth();
         var pending = JSON.parse(user.pending);
         googleAuth.setCredentials(user.google);
+        /* not sure if this commented block should be removed -- due to merge
+         const event = {
+          'summary': pending.subject,
+          'start': {
+            'date': pending.date,
+            'timeZone': 'America/Los_Angeles',
+          },
+          'end': {
+            'date': pending.date,
+            'timeZone': 'America/Los_Angeles',
+          }
+        };
+        console.log(event);
+        var newReminder = new Reminder({
+          subject: pending.subject,
+          date: pending.date,
+          userId: user.slackDmId,
+        }); */
         var currentDate = new Date();
         if(currentDate > user.google.expiry_date) {
           googleAuth.refreshAccessToken(function(err, tokens) {
