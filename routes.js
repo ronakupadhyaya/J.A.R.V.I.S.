@@ -19,70 +19,15 @@ const scopes = [
 const calendar = google.calendar('v3');
 /* test44607 */
 router.post('/slack/interactive', (req, res) => {
-  User.findOne({"google.profile_name": "Test Account"})
-    .then((user, err) => {
-      if(err) {
-        console.log("ERROR", err);
-        return;
-      }
-      console.log("USER is", user);
-      const event = {
-        'summary': 'Reminder',
-        'description': 'Reminder',
-        'start': {
-          'date': '2017-07-20',
-          'timeZone': 'America/Los_Angeles',
-        },
-        'end': {
-          'date': '2017-07-20',
-          'timeZone': 'America/Los_Angeles',
-        }
-      };
-      console.log("Here1");
-      const googleAuth = getGoogleAuth();
-      googleAuth.setCredentials(user.google);
-      console.log("Here2", user.google);
-      calendar.events.insert({
-        auth: googleAuth,
-        calendarId: 'primary',
-        resource: event,
-      }, (err) => {
-        if (err) {
-          console.log('There was an error contacting the Calendar service: trial ' + err);
-          return;
-        }
-        console.log('Event created trial');
-      });
-
-    });
-
   User.findOne({ slackId: JSON.parse(req.body.payload).user.id })
     .then((user) => {
       if (!user) {
         console.log("User not found");
       } else {
-        //console.log(user);
+        // console.log(user);
         const googleAuth = getGoogleAuth();
         const pending = JSON.parse(user.pending);
         googleAuth.setCredentials(user.google);
-        /* not sure if this commented block should be removed -- due to merge
-         const event = {
-          'summary': pending.subject,
-          'start': {
-            'date': pending.date,
-            'timeZone': 'America/Los_Angeles',
-          },
-          'end': {
-            'date': pending.date,
-            'timeZone': 'America/Los_Angeles',
-          }
-        };
-        console.log(event);
-        var newReminder = new Reminder({
-          subject: pending.subject,
-          date: pending.date,
-          userId: user.slackDmId,
-        }); */
         const currentDate = new Date();
         if (currentDate > user.google.expiry_date) {
           googleAuth.refreshAccessToken((err, tokens) => {
@@ -126,8 +71,6 @@ router.post('/slack/interactive', (req, res) => {
               });
             });
         } else if (pending.type === "meeting") {
-          console.log('START HERE');
-          console.log(pending.ids);
           const attendees = [];
           for(let i = 0; i < pending.ids.length; i++) {
             const object = {};
@@ -136,7 +79,6 @@ router.post('/slack/interactive', (req, res) => {
             object.email = rtm.dataStore.getUserById(id).profile.email;
             attendees.push(object);
           }
-          console.log(attendees);
           const event2 = {
             'summary': 'Meeting',
             'description': pending.type,
@@ -150,7 +92,19 @@ router.post('/slack/interactive', (req, res) => {
             },
             'attendees': attendees,
           };
-          console.log("Here");
+          for(let i = 0; i < pending.ids.length; i++) {
+            const id = pending.ids[i];
+            User.findOne({"user.slackId": id})
+              .then((pendingUser, err) => {
+                if(err) {
+                  console.log("User not found", err);
+                  return;
+                }
+                googleAuth.setCredentials(pendingUser.google);
+                console.log(googleAuth);
+              });
+          }
+
           calendar.events.insert({
             auth: googleAuth,
             calendarId: 'primary',

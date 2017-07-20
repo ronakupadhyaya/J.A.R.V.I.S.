@@ -107,8 +107,10 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                 } else {
                   console.log('Finish', data);
                   const ids = [];
+                  const users = [];
                   for (const key in mapping) {
                     if (mapping.hasOwnProperty(key)) {
+                      users.push(key);
                       ids.push(mapping[key]);
                     }
                   }
@@ -118,7 +120,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   // text = text.slice(startIndex + 5, endIndex - 1).trim();
                   // console.log(mapping);
                   web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
-                  user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting', ids: ids }));
+                  user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting', ids: ids, users: users }));
                   user.save();
                 }
                 break;
