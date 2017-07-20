@@ -53,7 +53,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
       return user;
     })
     .then(function(user) {
-      console.log('USER is',user);
+      console.log('USER is', rtm.dataStore.getUserById(user.slackId));
       if(!user.google) {
         rtm.sendMessage(`Hello this is scheduler bot. I need to schedule reminders. Please visit http://glacial-shelf-50059.herokuapp.com/connect?user=${user._id} to setup Google Calendar`, msg.channel);
       } else {
