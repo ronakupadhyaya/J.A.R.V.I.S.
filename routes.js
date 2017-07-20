@@ -19,14 +19,13 @@ const scopes = [
 const calendar = google.calendar('v3');
 /* test44607 */
 router.post('/slack/interactive', (req, res) => {
-  User.find({"google.profile_name": "Test Account"})
+  User.findOne({"google.profile_name": "Test Account"})
     .then((user, err) => {
       if(err) {
         console.log("ERROR", err);
         return;
       }
       console.log("USER is", user);
-      console.log("USER is ()", user.google);
       const event = {
         'summary': 'Reminder',
         'description': 'Reminder',
