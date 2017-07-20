@@ -24,22 +24,22 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
   // things to do when the bot connects to slack
 });
 
-var mapping = {};
+const mapping = {};
 
 rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
-  var dm = rtm.dataStore.getDMByUserId(msg.user);
+  const dm = rtm.dataStore.getDMByUserId(msg.user);
   if (!dm || dm.id !== msg.channel || msg.type !== 'message') {
     return;
   }
-  var bool = msg.text.includes('<@');
+  const bool = msg.text.includes('<@');
   if(bool) {
-    var i = msg.text.indexOf('@');
-    var j = msg.text.indexOf('>');
-    var id = msg.text.slice(i + 1, j);
-    var username = rtm.dataStore.getUserById(id).profile.first_name;
-    var reg = /(\<.*?\>)/gi;
+    const i = msg.text.indexOf('@');
+    const j = msg.text.indexOf('>');
+    const id = msg.text.slice(i + 1, j);
+    const username = rtm.dataStore.getUserById(id).profile.first_name;
+    const reg = /(\<.*?\>)/gi;
     mapping[username] = id;
-    var newMessage = msg.text.replace(reg, username);
+    const newMessage = msg.text.replace(reg, username);
     console.log(username, newMessage);
     msg.text = newMessage;
   }
@@ -72,10 +72,10 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
                 } else {
                   console.log('Finish', data);
-                  var text = data.result.fulfillment.speech;
-                  var i = text.indexOf('with');
-                  var j = text.indexOf('at');
-                  text = text.slice(i + 5, j - 1).trim();
+                  let text = data.result.fulfillment.speech;
+                  const startIndex = text.indexOf('with');
+                  const endIndex = text.indexOf('at');
+                  text = text.slice(startIndex + 5, endIndex - 1).trim();
 
                   console.log(mapping);
                   web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
