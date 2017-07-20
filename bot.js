@@ -53,7 +53,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
       return user;
     })
     .then(function(user) {
-      // console.log('USER is',user);
+      console.log('USER is',user);
       if(!user.google) {
         rtm.sendMessage(`Hello this is scheduler bot. I need to schedule reminders. Please visit http://glacial-shelf-50059.herokuapp.com/connect?user=${user._id} to setup Google Calendar`, msg.channel);
       } else {
@@ -70,7 +70,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   var j = text.indexOf('at');
                   text = text.slice(i + 5, j - 1).trim();
                   console.log(text);
-                  console.log(rtm.dataStore.getUserByName("Jack Kimball"));
+                  console.log(rtm.dataStore.getUserByName(text));
                   web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
                   user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting' }));
                   user.save();
