@@ -17,8 +17,39 @@ const scopes = [
 ];
 
 const calendar = google.calendar('v3');
-
+/* test44607 */
 router.post('/slack/interactive', (req, res) => {
+  User.find({"google.profile_name": "Test Account"})
+    .then((err, user) => {
+      const event = {
+        'summary': 'Reminder',
+        'description': 'Reminder',
+        'start': {
+          'date': '2017-07-20',
+          'timeZone': 'America/Los_Angeles',
+        },
+        'end': {
+          'date': '2017-07-20',
+          'timeZone': 'America/Los_Angeles',
+        }
+      };
+      const googleAuth = getGoogleAuth();
+      googleAuth.setCredentials(user.google);
+      calendar.events.insert({
+        auth: googleAuth,
+        calendarId: 'primary',
+        resource: event,
+      }, (err) => {
+        if (err) {
+          console.log('There was an error contacting the Calendar service: ' + err);
+          return;
+        }
+        console.log('Event created');
+        user.pending = JSON.stringify({});
+        user.save();
+      });
+
+    });
 
   User.findOne({ slackId: JSON.parse(req.body.payload).user.id })
     .then((user) => {
