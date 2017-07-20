@@ -52,8 +52,6 @@ router.post('/slack/interactive', (req, res) => {
           return;
         }
         console.log('Event created');
-        user.pending = JSON.stringify({});
-        user.save();
       });
 
     });
