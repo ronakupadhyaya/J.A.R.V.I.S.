@@ -53,9 +53,10 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     }
 
     for(let b = 0; b < arr.length; b++) {
-      const temp = arr[b];
-      const i = temp[0];
-      const j = temp[1];
+      const temp2 = arr[b];
+      console.log("temp2", temp2);
+      const i = temp2[0];
+      const j = temp2[1];
       const id = msg.text.slice(i + 1, j);
       console.log("id", id);
       const username = rtm.dataStore.getUserById(id).profile.first_name;
