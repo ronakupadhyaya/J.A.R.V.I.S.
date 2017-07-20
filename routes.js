@@ -91,6 +91,14 @@ router.post('/slack/interactive', (req, res) => {
         } else if (pending.type === "meeting") {
           console.log('START HERE');
           console.log(pending.ids);
+          const attendees = [];
+          for(let i = 0; i < pending.ids.length; i++) {
+            const object = {};
+            const id = pending.ids[i];
+            console.log(rtm.dataStore.getUserById(id).profile);
+            object.email = rtm.dataStore.getUserById(id).profile.email;
+            attendees.push(object);
+          }
           const event2 = {
             'summary': 'Meeting',
             'description': pending.type,
