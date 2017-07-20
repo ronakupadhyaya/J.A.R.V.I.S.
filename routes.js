@@ -101,7 +101,7 @@ router.post('/slack/interactive', (req, res) => {
                   return;
                 }
                 googleAuth.setCredentials(pendingUser.google);
-                console.log(googleAuth);
+                console.log("GOOGLE AUTH IS:",googleAuth);
               });
           }
 
