@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 
-import rtm from './bot';
+import { rtm } from './bot';
 
 import google from 'googleapis';
 
