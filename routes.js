@@ -1,5 +1,5 @@
 import express from 'express';
-var router = express.Router();
+const router = express.Router();
 
 import rtm from './bot';
 
@@ -19,14 +19,14 @@ const scopes = [
 const calendar = google.calendar('v3');
 
 router.post('/slack/interactive', (req, res) => {
-  User.findOne({slackId: JSON.parse(req.body.payload).user.id})
+  User.findOne({ slackId: JSON.parse(req.body.payload).user.id })
     .then((user) => {
       if (!user) {
         console.log("User not found");
       } else {
         console.log(user);
-        var googleAuth = getGoogleAuth();
-        var pending = JSON.parse(user.pending);
+        const googleAuth = getGoogleAuth();
+        const pending = JSON.parse(user.pending);
         googleAuth.setCredentials(user.google);
         /* not sure if this commented block should be removed -- due to merge
          const event = {
@@ -46,14 +46,14 @@ router.post('/slack/interactive', (req, res) => {
           date: pending.date,
           userId: user.slackDmId,
         }); */
-        var currentDate = new Date();
-        if(currentDate > user.google.expiry_date) {
-          googleAuth.refreshAccessToken(function(err, tokens) {
+        const currentDate = new Date();
+        if (currentDate > user.google.expiry_date) {
+          googleAuth.refreshAccessToken((err, tokens) => {
             user.google = tokens;
             user.save();
           });
         }
-        if(pending.type === "reminder") {
+        if (pending.type === "reminder") {
           const event = {
             'summary': 'Reminder',
             'description': pending.subject,
@@ -66,7 +66,7 @@ router.post('/slack/interactive', (req, res) => {
               'timeZone': 'America/Los_Angeles',
             }
           };
-          var newReminder = new Reminder({
+          const newReminder = new Reminder({
             subject: pending.subject,
             date: pending.date,
             userId: user.slackDmId,
@@ -88,7 +88,7 @@ router.post('/slack/interactive', (req, res) => {
                 user.save();
               });
             });
-        } else if(pending.type === "meeting") {
+        } else if (pending.type === "meeting") {
           console.log('START HERE');
           const dateTimeString = pending.date + 'T' + pending.time + '-07:00';
           console.log(dateTimeString);
@@ -122,34 +122,33 @@ router.post('/slack/interactive', (req, res) => {
         }
       }
     });
-
   res.send(JSON.parse(req.body.payload).actions[0].value);
 });
 
 router.get('/connect', (req, res) => {
-  var userId = req.query.user;
+  const userId = req.query.user;
   console.log("userId", userId);
-  if (! userId) {
+  if (!userId) {
     req.status(400).send('Missing id');
-  } else{
+  } else {
     User.findById(userId)
       .then((user) => {
-        if(!user) {
+        if (!user) {
           res.status(404).send('Cannot find user');
-        } else{
-        // GOOGLE AUTH STUFF HERE
-          var googleauth = getGoogleAuth();
+        } else {
+          // GOOGLE AUTH STUFF HERE
+          const googleauth = getGoogleAuth();
 
-          var url = googleauth.generateAuthUrl({
-          // 'online' (default) or 'offline' (gets refresh_token)
+          const url = googleauth.generateAuthUrl({
+            // 'online' (default) or 'offline' (gets refresh_token)
             access_type: 'offline',
             prompt: 'consent',
             // If you only need one scope you can pass it as a string
             scope: scopes,
             state: userId
 
-          // Optional property that passes state parameters to redirect URI
-          // state: { foo: 'bar' }
+            // Optional property that passes state parameters to redirect URI
+            // state: { foo: 'bar' }
           });
           console.log('URL is', url);
           res.redirect(url); // at the end
@@ -161,18 +160,18 @@ router.get('/connect', (req, res) => {
 router.get('/connect/callback', (req, res) => {
   // console.log('bitches');
   // res.send('here')
-  var googleAuth = getGoogleAuth();
+  const googleAuth = getGoogleAuth();
   googleAuth.getToken(req.query.code, (err, tokens) => {
-  // Now tokens contains an access_token and an optional refresh_token. Save them.
+    // Now tokens contains an access_token and an optional refresh_token. Save them.
     if (err) {
-      res.status(500).json({error: err});
+      res.status(500).json({ error: err });
       // oauth2Client.setCredentials(tokens);
     } else {
       googleAuth.setCredentials(tokens);
-      var plus = google.plus('v1');
-      plus.people.get({ auth: googleAuth, userId: 'me'}, (err, googleUser) => {
-        if(err) {
-          res.status(500).json({error: err});
+      const plus = google.plus('v1');
+      plus.people.get({ auth: googleAuth, userId: 'me' }, (err, googleUser) => {
+        if (err) {
+          res.status(500).json({ error: err });
         } else {
           User.findById(req.query.state)
             .then((mongoUser) => {

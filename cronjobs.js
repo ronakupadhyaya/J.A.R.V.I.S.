@@ -19,14 +19,14 @@ rtm.start();
 
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
   Reminder.find()
-    .then(function(reminders) {
-      for(var i = 0; i < reminders.length; i++) {
-        var reminder = reminders[i];
+    .then((reminders) => {
+      for (let i = 0; i < reminders.length; i++) {
+        const reminder = reminders[i];
         console.log(reminder.date, currentDate);
         if(reminder.date === currentDate.toISOString().slice(0, 10)) {
           console.log("Today");
           rtm.sendMessage(reminder.subject, reminder.userId);
-          Reminder.remove({subject: reminder.subject}, function(err) {
+          Reminder.remove({subject: reminder.subject}, (err) => {
             if(err) {
               console.log(err);
             }

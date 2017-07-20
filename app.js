@@ -13,14 +13,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/', routes);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-var port = process.env.PORT || 3000;
-app.listen(port, function() {
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
   console.log('Express started. Listening on port %s', port);
 });
 
