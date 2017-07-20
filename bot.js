@@ -30,12 +30,14 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     return;
   }
   var bool = msg.text.includes('<@');
+  var mapping = {};
   if(bool) {
     var i = msg.text.indexOf('@');
     var j = msg.text.indexOf('>');
     var id = msg.text.slice(i + 1, j);
-    var username = rtm.dataStore.getUserById(id).profile.real_name;
+    var username = rtm.dataStore.getUserById(id).profile.first_name;
     var reg = /(\<.*?\>)/gi;
+    mapping[username] = id;
     var newMessage = msg.text.replace(reg, username);
     console.log(username, newMessage);
     msg.text = newMessage;
@@ -69,7 +71,8 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   var i = text.indexOf('with');
                   var j = text.indexOf('at');
                   text = text.slice(i + 5, j - 1).trim();
-                  console.log(text);
+
+                  console.log(mapping);
                   console.log(rtm.dataStore.getUserByName(text));
                   web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
                   user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting' }));
