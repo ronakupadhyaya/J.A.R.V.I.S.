@@ -107,7 +107,6 @@ router.post('/slack/interactive', (req, res) => {
                 userAuth.setCredentials(pendingUser.google);
                 console.log("GOOGLE AUTH IS:", userAuth);
                 axios.post('https://www.googleapis.com/calendar/v3/freeBusy', {
-                  "auth": userAuth,
                   "timeMin": "2017-07-19T23:44:28.917Z",
                   "timeMax": "2017-07-20T23:44:28.917Z",
                   "items": [{
@@ -119,6 +118,7 @@ router.post('/slack/interactive', (req, res) => {
                   });
               });
           }
+          console.log("Out of for-loop");
 
           calendar.events.insert({
             auth: googleAuth,
