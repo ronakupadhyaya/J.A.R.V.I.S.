@@ -53,7 +53,6 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     }
 
     for(let b = 0; b < arr.length; b++) {
-      console.log("temp2", temp2);
       const i = msg.text.indexOf('@');
       const j = msg.text.indexOf('>');
       console.log(i, j, msg.text);
