@@ -99,6 +99,7 @@ router.post('/slack/interactive', (req, res) => {
             object.email = rtm.dataStore.getUserById(id).profile.email;
             attendees.push(object);
           }
+          console.log(attendees);
           const event2 = {
             'summary': 'Meeting',
             'description': pending.type,
