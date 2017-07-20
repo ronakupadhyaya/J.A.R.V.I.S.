@@ -20,7 +20,7 @@ const calendar = google.calendar('v3');
 /* test44607 */
 router.post('/slack/interactive', (req, res) => {
   User.find({"google.profile_name": "Test Account"})
-    .then((err, user) => {
+    .then((user, err) => {
       if(err) {
         console.log("ERROR", err);
         return;
