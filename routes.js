@@ -1,4 +1,6 @@
 import express from 'express';
+import axios from 'axios';
+
 const router = express.Router();
 
 import { rtm } from './bot';
@@ -93,6 +95,7 @@ router.post('/slack/interactive', (req, res) => {
             'attendees': attendees,
           };
           for(let i = 0; i < pending.ids.length; i++) {
+            console.log("In for-loop");
             const id = pending.ids[i];
             User.findOne({"user.slackId": id})
               .then((pendingUser, err) => {
@@ -100,8 +103,20 @@ router.post('/slack/interactive', (req, res) => {
                   console.log("User not found", err);
                   return;
                 }
-                googleAuth.setCredentials(pendingUser.google);
-                console.log("GOOGLE AUTH IS:",googleAuth);
+                const userAuth = getGoogleAuth();
+                userAuth.setCredentials(pendingUser.google);
+                console.log("GOOGLE AUTH IS:", userAuth);
+                axios.post('https://www.googleapis.com/calendar/v3/freeBusy', {
+                  "auth": userAuth,
+                  "timeMin": "2017-07-19T23:44:28.917Z",
+                  "timeMax": "2017-07-20T23:44:28.917Z",
+                  "items": [{
+                    "id": pendingUser.google.email
+                  }]
+                })
+                  .then((response) => {
+                    console.log("Response is", response);
+                  });
               });
           }
 
