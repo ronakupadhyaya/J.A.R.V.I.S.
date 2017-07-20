@@ -38,6 +38,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     var reg = /(\<.*?\>)/gi;
     var newMessage = msg.text.replace(reg, username);
     console.log(username, newMessage);
+    msg.text = newMessage;
   }
   User.findOne({slackId: msg.user})
     .then((user) => {
