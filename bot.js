@@ -65,6 +65,12 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   rtm.sendMessage(data.result.fulfillment.speech, msg.channel);
                 } else {
                   console.log('Finish', data);
+                  var text = data.result.fulfillment.speech;
+                  var i = text.indexOf('with');
+                  var j = text.indexOf('at');
+                  text = text.slice(i + 5, j - 1).trim();
+                  var fuckid = rtm.dataStore.getUserByName(text);
+                  console.log(fuckid);
                   web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
                   user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting' }));
                   user.save();
