@@ -57,12 +57,13 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
       const i = temp[0];
       const j = temp[1];
       const id = msg.text.slice(i + 1, j);
+      console.log("id", id);
       const username = rtm.dataStore.getUserById(id).profile.first_name;
       const reg = /(\<.*?\>)/gi;
       mapping[username] = id;
       const newMessage = msg.text.replace(reg, username);
       msg.text = newMessage;
-      console.log(username, newMessage);
+      //console.log(username, newMessage);
     }
   
     // const i = msg.text.indexOf('@');
