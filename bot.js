@@ -33,15 +33,41 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
   }
   const bool = msg.text.includes('<@');
   if(bool) {
-    const i = msg.text.indexOf('@');
-    const j = msg.text.indexOf('>');
-    const id = msg.text.slice(i + 1, j);
-    const username = rtm.dataStore.getUserById(id).profile.first_name;
-    const reg = /(\<.*?\>)/gi;
-    mapping[username] = id;
-    const newMessage = msg.text.replace(reg, username);
-    console.log(username, newMessage);
-    msg.text = newMessage;
+    const arr = [];
+    for(let a = 0; a < msg.text.length; a++) {
+      const temp = [];
+      if(msg.text[a] === '@') {
+        temp.push(a);
+      }
+      if(msg.text[a] === '>') {
+        temp.push(a);
+      }
+      arr.push(temp);
+    }
+
+    for(let b = 0; b < arr.length; b++) {
+      const temp = arr[b];
+      const i = temp[0];
+      const j = temp[1];
+      const id = msg.text.slice(i + 1, j);
+      const username = rtm.dataStore.getUserById(id).profile.first_name;
+      const reg = /(\<.*?\>)/gi;
+      mapping[username] = id;
+      const newMessage = msg.text.replace(reg, username);
+      msg.text = newMessage;
+      console.log(username, newMessage);
+    }
+  
+    // const i = msg.text.indexOf('@');
+    // const j = msg.text.indexOf('>');
+    // const id = msg.text.slice(i + 1, j);
+    // const username = rtm.dataStore.getUserById(id).profile.first_name;
+    // const reg = /(\<.*?\>)/gi;
+    // mapping[username] = id;
+    // const newMessage = msg.text.replace(reg, username);
+    // console.log(username, newMessage);
+    // msg.text = newMessage;
+
   }
   User.findOne({slackId: msg.user})
     .then((user) => {
