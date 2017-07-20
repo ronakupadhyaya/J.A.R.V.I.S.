@@ -48,10 +48,10 @@ router.post('/slack/interactive', (req, res) => {
         resource: event,
       }, (err) => {
         if (err) {
-          console.log('There was an error contacting the Calendar service: ' + err);
+          console.log('There was an error contacting the Calendar service: trial ' + err);
           return;
         }
-        console.log('Event created');
+        console.log('Event created trial');
       });
 
     });
