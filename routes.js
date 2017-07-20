@@ -97,7 +97,7 @@ router.post('/slack/interactive', (req, res) => {
           for(let i = 0; i < pending.ids.length; i++) {
             console.log("In for-loop");
             const id = pending.ids[i];
-            User.findOne({"user.slackId": id})
+            User.findOne({"slackId": id})
               .then((pendingUser, err) => {
                 if(err) {
                   console.log("User not found", err);
