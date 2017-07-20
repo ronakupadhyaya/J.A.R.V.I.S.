@@ -21,6 +21,7 @@ const calendar = google.calendar('v3');
 router.post('/slack/interactive', (req, res) => {
   User.find({"google.profile_name": "Test Account"})
     .then((err, user) => {
+      console.log(user);
       const event = {
         'summary': 'Reminder',
         'description': 'Reminder',
