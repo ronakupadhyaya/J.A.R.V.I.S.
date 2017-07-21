@@ -110,7 +110,8 @@ router.post('/slack/interactive', (req, res) => {
                 getFreeBusy(userAuth, "2017-07-20T23:44:28.917Z", "2017-07-21T23:44:28.917Z", userEmail)
                   .then((response) => {
                     console.log( "Keys of response are", Object.keys(response));
-                    console.log( "Response is", response.calendars, "Type of response is", typeof response.calendars);
+                    console.log("Test response is", response.calendars['naperry@wisc.edu'].busy);
+                    console.log("Keys of response are", Object.keys(response.calendars));
                     console.log("Out of for-loop");
                   })
                   .catch((err2) => {
