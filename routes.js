@@ -103,14 +103,15 @@ router.post('/slack/interactive', (req, res) => {
                   console.log("User not found", err);
                   return;
                 }
+                const userEmail = rtm.dataStore.getUserById(id).profile.email;
                 const userAuth = getGoogleAuth();
                 userAuth.setCredentials(pendingUser.google);
-                console.log("user is", pendingUser);
+                /* console.log("user is", pendingUser); */
                 axios.post('https://www.googleapis.com/calendar/v3/freeBusy', {
                   "timeMin": "2017-07-19T23:44:28.917Z",
                   "timeMax": "2017-07-20T23:44:28.917Z",
                   "items": [{
-                    "id": pendingUser.google.email
+                    "id": userEmail
                   }]
                 })
                   .then((response) => {
