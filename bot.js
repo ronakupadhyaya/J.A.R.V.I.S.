@@ -123,6 +123,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting', ids: ids, users: users }));
                   console.log("In bot.js", ids);
                   user.save();
+                  mapping = {};
                 }
                 break;
               case 'reminder.add':
