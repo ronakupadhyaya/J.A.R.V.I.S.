@@ -24,7 +24,7 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
   // things to do when the bot connects to slack
 });
 
-const mapping = {};
+let mapping = {};
 
 rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
   const dm = rtm.dataStore.getDMByUserId(msg.user);
