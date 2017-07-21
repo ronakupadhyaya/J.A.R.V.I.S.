@@ -51,13 +51,15 @@ const getQueryParams = (msg, sessionId) => ({
 const getFreeBusy = (auth, timeMin, timeMax, id) => (
   new Promise( (resolve, reject) => {
     calendar.freebusy.query({
-      "auth": auth,
-      "timeMin": timeMin,
-      "timeMax": timeMax,
-      "items": [{
-        "id": id
-      }]
-    }, function(err, result) {
+      auth: auth,
+      resource: {
+        timeMin: timeMin,
+        timeMax: timeMax,
+        items: [{
+          id: id
+        }]
+      }
+    }, (err, result) => {
       if(err) {
         reject(err);
       } else {
