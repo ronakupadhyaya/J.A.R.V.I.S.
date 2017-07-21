@@ -109,8 +109,7 @@ router.post('/slack/interactive', (req, res) => {
                 userAuth.setCredentials(pendingUser.google);
                 getFreeBusy(userAuth, "2017-07-20T23:44:28.917Z", "2017-07-21T23:44:28.917Z", userEmail)
                   .then((response) => {
-                    const userEmail2 = rtm.dataStore.getUserById(id).profile.email;
-                    console.log(typeof userEmail2, "Response is", response.calendars.userEmail2);
+                    console.log(typeof userEmail, "Response is", response.calendars.userEmail);
                     console.log("Out of for-loop");
                   })
                   .catch((err2) => {
