@@ -17,6 +17,7 @@
     "express": "^4.15.3",
     "googleapis": "^20.1.0",
     "moment": "^2.18.1",
+    "moment-timezone": "^0.5.13",
     "mongoose": "^4.11.3"
   },
   "devDependencies": {
