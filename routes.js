@@ -110,7 +110,7 @@ router.post('/slack/interactive', (req, res) => {
                 userAuth.setCredentials(pendingUser.google);
                 getFreeBusy(userAuth, "2017-07-10T23:44:28.917Z", "2017-07-21T23:44:28.917Z", userEmail)
                   .then((response) => {
-                    console.log("Busy times are", response.calendars[userEmail].busy);
+                    console.log("Busy times are", userEmail, response.calendars[userEmail].busy);
                     busy.push(response.calendars[userEmail].busy);
                     console.log("THIS IS BUSY", busy);
                     console.log("Out of for-loop");
