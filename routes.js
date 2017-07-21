@@ -104,6 +104,7 @@ router.post('/slack/interactive', (req, res) => {
                   return;
                 }
                 const userEmail = rtm.dataStore.getUserById(id).profile.email;
+                console.log(userEmail);
                 const userAuth = getGoogleAuth();
                 userAuth.setCredentials(pendingUser.google);
                 /* console.log("user is", pendingUser); */
@@ -116,10 +117,14 @@ router.post('/slack/interactive', (req, res) => {
                 })
                   .then((response) => {
                     console.log("Response is", response);
+                    console.log("Out of for-loop");
+                  })
+                  .catch((err2) => {
+                    console.log("Error", err2);
+                    console.log("Out of for-loop");
                   });
               });
           }
-          console.log("Out of for-loop");
 
           calendar.events.insert({
             auth: googleAuth,
