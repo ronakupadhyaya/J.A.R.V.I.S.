@@ -108,6 +108,7 @@ router.post('/slack/interactive', (req, res) => {
                 const userAuth = getGoogleAuth();
                 userAuth.setCredentials(pendingUser.google);
                 /* console.log("user is", pendingUser); */
+                console.log('User auth is', userAuth);
                 axios.post('https://www.googleapis.com/calendar/v3/freeBusy', {
                   "auth": userAuth,
                   "timeMin": "2017-07-19T23:44:28.917Z",
