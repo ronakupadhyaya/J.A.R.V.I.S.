@@ -31,4 +31,4 @@ var Reminder = mongoose.model('Reminder', reminderSchema);
 module.exports = {
   User: User,
   Reminder: Reminder
-}
+};
