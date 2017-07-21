@@ -94,6 +94,7 @@ router.post('/slack/interactive', (req, res) => {
             },
             'attendees': attendees,
           };
+          const busy = [];
           for(let i = 0; i < pending.ids.length; i++) {
             console.log("In for-loop");
             const id = pending.ids[i];
@@ -110,6 +111,8 @@ router.post('/slack/interactive', (req, res) => {
                 getFreeBusy(userAuth, "2017-07-20T23:44:28.917Z", "2017-07-21T23:44:28.917Z", userEmail)
                   .then((response) => {
                     console.log("Busy times are", response.calendars[userEmail].busy);
+                    busy.push(response.calendars[userEmail].busy);
+                    console.log(busy);
                     console.log("Out of for-loop");
                   })
                   .catch((err2) => {
