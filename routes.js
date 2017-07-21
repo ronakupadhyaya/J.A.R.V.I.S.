@@ -95,6 +95,7 @@ router.post('/slack/interactive', (req, res) => {
             'attendees': attendees,
           };
           const busy = [];
+          console.log("Before the loop", pending.ids);
           for(let i = 0; i < pending.ids.length; i++) {
             console.log("In for-loop");
             const id = pending.ids[i];

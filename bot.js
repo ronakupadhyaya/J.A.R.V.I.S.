@@ -121,6 +121,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
                   // console.log(mapping);
                   web.chat.postMessage(msg.channel, data.result.fulfillment.speech, messageConfirmation(data.result.fulfillment.speech, "remember to add code to actaully cancel the meeting/not schedule one"));
                   user.pending = JSON.stringify(Object.assign({}, data.result.parameters, { type: 'meeting', ids: ids, users: users }));
+                  console.log("In bot.js", ids);
                   user.save();
                 }
                 break;
