@@ -10,7 +10,7 @@ import google from 'googleapis';
 const OAuth2 = google.auth.OAuth2;
 
 import { User, Reminder } from './models';
-import { getGoogleAuth } from './constants';
+import { getGoogleAuth, getFreeBusy } from './constants';
 
 const scopes = [
   'https://www.googleapis.com/auth/calendar',
@@ -109,14 +109,15 @@ router.post('/slack/interactive', (req, res) => {
                 userAuth.setCredentials(pendingUser.google);
                 /* console.log("user is", pendingUser); */
                 console.log('User auth is', userAuth);
-                axios.post('https://www.googleapis.com/calendar/v3/freeBusy', {
-                  "auth": userAuth,
-                  "timeMin": "2017-07-19T23:44:28.917Z",
-                  "timeMax": "2017-07-20T23:44:28.917Z",
-                  "items": [{
-                    "id": userEmail
-                  }]
-                })
+                // axios.post('https://www.googleapis.com/calendar/v3/freeBusy', {
+                //   "auth": userAuth,
+                //   "timeMin": "2017-07-19T23:44:28.917Z",
+                //   "timeMax": "2017-07-20T23:44:28.917Z",
+                //   "items": [{
+                //     "id": userEmail
+                //   }]
+                // })
+                getFreeBusy(userAuth, "2017-07-19T23:44:28.917Z", "2017-07-19T23:44:28.917Z", userEmail)
                   .then((response) => {
                     console.log("Response is", response);
                     console.log("Out of for-loop");
