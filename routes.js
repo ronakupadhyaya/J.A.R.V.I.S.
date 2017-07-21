@@ -124,7 +124,7 @@ router.post('/slack/interactive', (req, res) => {
                   })
                   .catch((err2) => {
                     // console.log("Error", err2);
-                    console.log("Error response data", err2.response.data);
+                    console.log("Error is", err2);
                     console.log("Out of for-loop");
                   });
               });
