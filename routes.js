@@ -117,7 +117,7 @@ router.post('/slack/interactive', (req, res) => {
                 //     "id": userEmail
                 //   }]
                 // })
-                getFreeBusy(userAuth, "2017-07-19T23:44:28.917Z", "2017-07-19T23:44:28.917Z", userEmail)
+                getFreeBusy(userAuth, "2017-07-20T23:44:28.917Z", "2017-07-21T23:44:28.917Z", userEmail)
                   .then((response) => {
                     console.log("Response is", response);
                     console.log("Out of for-loop");
