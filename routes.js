@@ -112,7 +112,7 @@ router.post('/slack/interactive', (req, res) => {
                   .then((response) => {
                     console.log("Busy times are", response.calendars[userEmail].busy);
                     busy.push(response.calendars[userEmail].busy);
-                    console.log(busy);
+                    console.log("THIS IS BUSY", busy);
                     console.log("Out of for-loop");
                   })
                   .catch((err2) => {
