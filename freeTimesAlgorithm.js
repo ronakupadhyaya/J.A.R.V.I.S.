@@ -8,7 +8,7 @@ const convertMS = (isoTime) => {
 
 // comparison function for sort
 const compareTime = (a, b) => {
-  return a.start < b.start;
+  return b.start - a.start;
 };
 
 // arr is the array of intervals
